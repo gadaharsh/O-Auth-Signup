@@ -4,38 +4,43 @@ import {
   Image,
   StyleSheet,
   useWindowDimensions,
+  ScrollView
 } from "react-native";
 import React from "react";
 import icon from "../../assets/signup.gif";
 import CustomButton from "../components/CustomButton";
+import SocialSignInButtons from "../components/SocialSignInButtons";
 
 const onButtonPress = () => {
   console.warn("Button Clicked");
 };
 
-const onSignInGoogle = () => {
-  console.warn("Sign In with Google");
-};
+// const onSignInGoogle = () => {
+//   console.warn("Sign In with Google");
+// };
 
-const onSignInFacebook = () => {
-  console.warn("Sign In with Facebook");
-};
+// const onSignInFacebook = () => {
+//   console.warn("Sign In with Facebook");
+// };
 
-const onSignInGithub = () => {
-  console.warn("Sign In with Github");
-};
+// const onSignInGithub = () => {
+//   console.warn("Sign In with Github");
+// };
 
 const SignUpScreen = () => {
   const { height } = useWindowDimensions();
 
   return (
+    <ScrollView showsVerticalScrollIndicator={false}>
     <View style={styles.root}>
       {/* <Text>SignUpScreen</Text> */}
       <Image source={icon} style={[styles.icon, { height: height * 0.4 }]} />
 
       <CustomButton onPress={onButtonPress} text="Button" />
 
-      <CustomButton
+      <SocialSignInButtons/>
+
+      {/* <CustomButton
         onPress={onSignInGoogle}
         text="Sign In with Google"
         bgColor="#FAE9EA"
@@ -52,8 +57,15 @@ const SignUpScreen = () => {
         text="Sign In with Github"
         bgColor="#e3e3e3"
         fgColor="#363636"
-      />
+      /> */}
+
+      <Text style={styles.text}>
+        By registering, you confirm that you accept our
+        <Text style={styles.link}> Terms of Use</Text> and
+        <Text style={styles.link}> Privacy Policy</Text>.
+      </Text>
     </View>
+    </ScrollView>
   );
 };
 
@@ -71,6 +83,13 @@ const styles = StyleSheet.create({
     // borderRadius: 2,
     // overflow: "hidden",
   },
+  link:{
+    color: "#FDB075",
+  },
+  text:{
+    // fontWeight: "bold",
+    color: "black",
+  }
 });
 
 export default SignUpScreen;

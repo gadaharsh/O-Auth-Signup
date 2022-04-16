@@ -10,10 +10,11 @@ import React from "react";
 import icon from "../../assets/signup.gif";
 import CustomButton from "../components/CustomButton";
 import SocialSignInButtons from "../components/SocialSignInButtons";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-const onButtonPress = () => {
-  console.warn("Button Clicked");
-};
+
+
 
 // const onSignInGoogle = () => {
 //   console.warn("Sign In with Google");
@@ -27,11 +28,15 @@ const onButtonPress = () => {
 //   console.warn("Sign In with Github");
 // };
 
-const SignUpScreen = () => {
+const SignUpScreen = ({ navigation }) => {
   const { height } = useWindowDimensions();
+  const onButtonPress = () => {
+    console.warn("Button Clicked");
+    navigation.navigate('Dashboard')
+  };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>
     <View style={styles.root}>
       {/* <Text>SignUpScreen</Text> */}
       <Image source={icon} style={[styles.icon, { height: height * 0.4 }]} />
@@ -70,7 +75,11 @@ const SignUpScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  main:{
+    backgroundColor: '#fff',
+  },
   root: {
+    // backgroundColor: '#fff',
     alignItems: "center",
     padding: "5%",
   },

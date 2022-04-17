@@ -4,5 +4,5 @@
 
 ### Some Pages in the app
 
-![](./Assets/signupHome.PNG)
-![](./Assets/dashboard.PNG)
+![](./assets/signupHome.PNG)
+![](./assets/dashboard.jpeg)

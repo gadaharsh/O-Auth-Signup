@@ -2,10 +2,27 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import CustomButton from './CustomButton';
 
-const SocialSignInButtons = () => {
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+
+import {authentication} from '../../firebase';
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
+const SocialSignInButtons = ({navigation}) => {
 
     const onSignInGoogle = () => {
         console.warn("Sign In with Google");
+        // const provider = new GoogleAuthProvider();
+        // signInWithPopup(authentication, provider)
+        // .then((res) =>{
+        //   console.log(res)
+        // })
+        // .catch((err)=>{
+        //   console.log(err)
+        // })
+        navigation.navigate('Dashboard')
+
       };
       
       const onSignInFacebook = () => {

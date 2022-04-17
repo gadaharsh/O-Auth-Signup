@@ -1,18 +1,46 @@
-import { StyleSheet, Text, View, ScrollView } from "react-native";
+import { StyleSheet, Text, View, ScrollView,Image } from "react-native";
 import React from "react";
 import CustomButton from "../components/CustomButton";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import * as Google from 'expo-google-app-auth';
+import * as WebBrowser from 'expo-web-browser'; 
 
-const Dashboard = () => {
+const B = (props) => (
+  <Text style={{ fontWeight: "bold" }}>{props.children}</Text>
+);
+
+const Dashboard = ({ route, naviation }) => {
+  
+  const config = {
+    androidClientId: "58546763613-33tog5un7lrc6h1io85hmdpkdcasfqoi.apps.googleusercontent.com",
+  }
+  const signOut = async () => {
+    await Google.logOutAsync({ ...config })
+  }
+
+  const { picture, name, email, provider } = route.params;
+
+  // const fname = (name) ? (name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())): name;
+  const fname = name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
+
   return (
+    {name} ?(
     <ScrollView style={styles.main}>
       <View style={styles.root}>
-        <Text>Dashboard Screen</Text>
-        <Text>Email: hello </Text>
-        <CustomButton text="Button" />
+        {/* <Text>Dashboard Screen</Text> */}
+        <View style={styles.userInfo}>
+          <Text>You have signed in with <B>{provider}</B></Text>
+          <Image source={{ uri: picture }} style={styles.profilePic}/>
+          <Text>Welcome <B>{fname}</B></Text>
+          <Text>Email: <B>{email}</B> </Text>
+        </View>
+        <CustomButton text="Sign Out" onPress={signOut}/>
       </View>
     </ScrollView>
+    ):(
+      <Text>Loading</Text>
+    )
   );
 };
 
@@ -26,4 +54,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: "5%",
   },
+  userInfo:{
+    fontWeight: "bold",
+    padding: 15,
+    marginVertical: 15,
+    justifyContent:"center",
+    alignItems: "center",
+  },
+  profilePic:{
+    width:100,
+    height:100,
+    borderRadius: 100,
+    marginVertical: 10
+  }
 });
+

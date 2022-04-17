@@ -12,23 +12,54 @@ import CustomButton from "../components/CustomButton";
 import SocialSignInButtons from "../components/SocialSignInButtons";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 import { onAuthStateChanged } from "firebase/auth";
 import {auth} from '../../firebase';
+import * as Google from 'expo-google-app-auth';
+
 import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
+import { ResponseType } from 'expo-auth-session';
+// import * as Google from 'expo-auth-session/providers/google';
+import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { async } from "@firebase/util";
+
+
+// Initialize Firebase
+initializeApp({
+  apiKey: "AIzaSyC5B50CwfNI4wnPQj6lUgcniWU8I1dP8WE",
+  authDomain: "oauthsignup-33c26.firebaseapp.com",
+  projectId: "oauthsignup-33c26",
+  storageBucket: "oauthsignup-33c26.appspot.com",
+  messagingSenderId: "58546763613",
+  appId: "1:58546763613:web:e887cc6c345ae12af85ab4",
+});
+
+WebBrowser.maybeCompleteAuthSession();
 
 const SignUpScreen = ({ navigation }) => {
+  const B = (props) => (
+    <Text style={{ fontWeight: "bold" }}>{props.children}</Text>
+  );
 
-  const initAsync = async () => {
-    await GoogleSignIn.initAsync({
-      // You may ommit the clientId when the firebase `googleServicesFile` is configured
-      clientId: '58546763613-oercrvugokjfcs7cmkfe5c49pdf3qgpg.apps.googleusercontent.com',
-    });
-    this._syncUserWithStateAsync();
-  };
+  // const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
+  //   {
+  //     clientId: '58546763613-oercrvugokjfcs7cmkfe5c49pdf3qgpg.apps.googleusercontent.com',
+  //     },
+  // );
+
+  // const initAsync = async () => {
+  //   await GoogleSignIn.initAsync({
+  //     // You may ommit the clientId when the firebase `googleServicesFile` is configured
+  //     clientId: '58546763613-oercrvugokjfcs7cmkfe5c49pdf3qgpg.apps.googleusercontent.com',
+  //   });
+  //   this._syncUserWithStateAsync();
+  // };
 
   const [user,setUser] = useState(null);
   const { height } = useWindowDimensions();
+  const [accessToken, setAcessToken] = useState();
+  const [userInfo, setUserInfo] = useState();
 
   const checkIfLoggedIn = () =>{
     onAuthStateChanged(auth,(user)=>{
@@ -50,6 +81,45 @@ const SignUpScreen = ({ navigation }) => {
     navigation.navigate('Dashboard')
   };
 
+  const signInWithGoogleAsync = async() =>{
+      try{
+        const result= await Google.logInAsync({
+          androidClientId: "58546763613-33tog5un7lrc6h1io85hmdpkdcasfqoi.apps.googleusercontent.com",
+          iosClientID: "",
+          scopes:["profile", "email"]
+
+        });
+
+        if(result.type === "success"){
+          setAcessToken(result.accessToken);
+          getUserData();
+          navigation.navigate('Dashboard',{
+              picture : userInfo?.picture,
+              name: userInfo?.name,
+              email: userInfo?.email,
+              provider: "Google"
+          })
+        }else{
+          console.log("Permission Denied");
+        }
+
+      }catch(e){
+        console.log(e);
+      }
+  }
+
+  const getUserData = async() =>{
+    let userInfoResponse = await fetch("https://www.googleapis.com/userinfo/v2/me",{
+      headers :{ Authorization : `Bearer ${accessToken}`}
+    })
+
+    userInfoResponse.json().then(data =>{
+      setUserInfo(data);
+      console.log(userInfo)
+    })
+
+  }
+
   const onSignInFacebook = () => {
     console.warn("Sign In with Facebook");
   };
@@ -58,9 +128,17 @@ const SignUpScreen = ({ navigation }) => {
     console.warn("Sign In with Github");
   };
 
-  useEffect( async () => {
-    await checkIfLoggedIn()
-  }, [])
+  // useEffect(  () => {
+  //   if (response?.type === 'success') {
+  //     const { id_token } = response.params;
+      
+  //     const auth = getAuth();
+  //     const provider = new GoogleAuthProvider();
+  //     const credential = provider.credential(id_token);
+  //     signInWithCredential(auth, credential);
+  //     navigation.navigate("Dashboard")
+  //   }
+  // }, [response])
   
 
 
@@ -70,12 +148,14 @@ const SignUpScreen = ({ navigation }) => {
         {/* <Text>SignUpScreen</Text> */}
         <Image source={icon} style={[styles.icon, { height: height * 0.4 }]} />
 
-        <CustomButton onPress={onButtonPress} text="Button" />
+        {/* <CustomButton onPress={onButtonPress} text="Button" /> */}
 
         {/* <SocialSignInButtons /> */}
 
+        <Text style={styles.info}>Please <B>Sign In</B> to Continue</Text>
+
         <CustomButton
-        onPress={onSignInGoogle}
+        onPress={ signInWithGoogleAsync}
         text="Sign In with Google"
         bgColor="#FAE9EA"
         fgColor="#DD4D44"
@@ -113,6 +193,7 @@ const styles = StyleSheet.create({
     padding: "5%",
   },
   icon: {
+    marginTop: "15%",
     width: "70%",
     // height: "70%",
     maxHeight: 300,
@@ -128,6 +209,10 @@ const styles = StyleSheet.create({
     // fontWeight: "bold",
     color: "black",
   },
+  info:{
+    margin:"1%",
+    fontSize: 18,
+  }
 });
 
 export default SignUpScreen;

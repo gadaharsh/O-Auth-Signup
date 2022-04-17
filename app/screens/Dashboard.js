@@ -12,15 +12,15 @@ const B = (props) => (
 
 const Dashboard = ({ route, naviation }) => {
   
-  const config = {
-    androidClientId: "58546763613-33tog5un7lrc6h1io85hmdpkdcasfqoi.apps.googleusercontent.com",
-  }
-  const signOut = async () => {
-    await Google.logOutAsync({ ...config })
-  }
+  // const config = {
+  //   androidClientId: "58546763613-33tog5un7lrc6h1io85hmdpkdcasfqoi.apps.googleusercontent.com",
+  // }
+  // const signOut = async () => {
+  //   await Google.logOutAsync({ ...config })
+  // }
 
   const { picture, name, email, provider } = route.params;
-
+  console.log(name)
   // const fname = (name) ? (name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())): name;
   const fname = name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
 
@@ -35,7 +35,7 @@ const Dashboard = ({ route, naviation }) => {
           <Text>Welcome <B>{fname}</B></Text>
           <Text>Email: <B>{email}</B> </Text>
         </View>
-        <CustomButton text="Sign Out" onPress={signOut}/>
+        {/* <CustomButton text="Sign Out" onPress={signOut}/> */}
       </View>
     </ScrollView>
     ):(

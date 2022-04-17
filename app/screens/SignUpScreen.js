@@ -6,7 +6,7 @@ import {
   useWindowDimensions,
   ScrollView,
 } from "react-native";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import icon from "../../assets/signup.gif";
 import CustomButton from "../components/CustomButton";
 import SocialSignInButtons from "../components/SocialSignInButtons";
@@ -14,16 +14,19 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { onAuthStateChanged } from "firebase/auth";
-import {auth} from '../../firebase';
-import * as Google from 'expo-google-app-auth';
+import { auth } from "../../firebase";
+import * as Google from "expo-google-app-auth";
 
-import * as WebBrowser from 'expo-web-browser';
-import { ResponseType } from 'expo-auth-session';
+import * as WebBrowser from "expo-web-browser";
+import { ResponseType } from "expo-auth-session";
 // import * as Google from 'expo-auth-session/providers/google';
-import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { initializeApp } from "firebase/app";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithCredential,
+} from "firebase/auth";
 import { async } from "@firebase/util";
-
 
 // Initialize Firebase
 initializeApp({
@@ -56,20 +59,20 @@ const SignUpScreen = ({ navigation }) => {
   //   this._syncUserWithStateAsync();
   // };
 
-  const [user,setUser] = useState(null);
+  const [user, setUser] = useState(null);
   const { height } = useWindowDimensions();
   const [accessToken, setAcessToken] = useState();
   const [userInfo, setUserInfo] = useState();
 
-  const checkIfLoggedIn = () =>{
-    onAuthStateChanged(auth,(user)=>{
-      if(user){
-      navigation.navigate("Dashboard")
-      }else {
-        navigation.navigate("SignIn")
+  const checkIfLoggedIn = () => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigation.navigate("Dashboard");
+      } else {
+        navigation.navigate("SignIn");
       }
-    })
-  }
+    });
+  };
 
   const onButtonPress = () => {
     console.warn("Button Clicked");
@@ -78,47 +81,60 @@ const SignUpScreen = ({ navigation }) => {
 
   const onSignInGoogle = () => {
     console.warn("Sign In with Google");
-    navigation.navigate('Dashboard')
+    navigation.navigate("Dashboard");
   };
 
-  const signInWithGoogleAsync = async() =>{
-      try{
-        const result= await Google.logInAsync({
-          androidClientId: "58546763613-33tog5un7lrc6h1io85hmdpkdcasfqoi.apps.googleusercontent.com",
-          iosClientID: "",
-          scopes:["profile", "email"]
+  const signInWithGoogleAsync = async () => {
+    try {
+      const result = await Google.logInAsync({
+        androidClientId:
+          "58546763613-33tog5un7lrc6h1io85hmdpkdcasfqoi.apps.googleusercontent.com",
+        iosClientID: "",
+        scopes: ["profile", "email"],
+      });
 
+      if (result.type === "success") {
+        setAcessToken(result.accessToken);
+        // getUserData();
+        let userInfoResponse = await fetch(
+          "https://www.googleapis.com/userinfo/v2/me",
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          }
+        );
+
+        userInfoResponse.json().then((data) => {
+          setUserInfo(data);
+          console.log(userInfo);
         });
 
-        if(result.type === "success"){
-          setAcessToken(result.accessToken);
-          getUserData();
-          navigation.navigate('Dashboard',{
-              picture : userInfo?.picture,
-              name: userInfo?.name,
-              email: userInfo?.email,
-              provider: "Google"
-          })
-        }else{
-          console.log("Permission Denied");
-        }
-
-      }catch(e){
-        console.log(e);
+        navigation.navigate("Dashboard", {
+          picture: userInfo?.picture,
+          name: userInfo?.name,
+          email: userInfo?.email,
+          provider: "Google",
+        });
+      } else {
+        console.log("Permission Denied");
       }
-  }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
-  const getUserData = async() =>{
-    let userInfoResponse = await fetch("https://www.googleapis.com/userinfo/v2/me",{
-      headers :{ Authorization : `Bearer ${accessToken}`}
-    })
+  const getUserData = async () => {
+    let userInfoResponse = await fetch(
+      "https://www.googleapis.com/userinfo/v2/me",
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
 
-    userInfoResponse.json().then(data =>{
+    userInfoResponse.json().then((data) => {
       setUserInfo(data);
-      console.log(userInfo)
-    })
-
-  }
+      console.log(userInfo);
+    });
+  };
 
   const onSignInFacebook = () => {
     console.warn("Sign In with Facebook");
@@ -131,7 +147,7 @@ const SignUpScreen = ({ navigation }) => {
   // useEffect(  () => {
   //   if (response?.type === 'success') {
   //     const { id_token } = response.params;
-      
+
   //     const auth = getAuth();
   //     const provider = new GoogleAuthProvider();
   //     const credential = provider.credential(id_token);
@@ -139,8 +155,6 @@ const SignUpScreen = ({ navigation }) => {
   //     navigation.navigate("Dashboard")
   //   }
   // }, [response])
-  
-
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.main}>
@@ -152,26 +166,28 @@ const SignUpScreen = ({ navigation }) => {
 
         {/* <SocialSignInButtons /> */}
 
-        <Text style={styles.info}>Please <B>Sign In</B> to Continue</Text>
+        <Text style={styles.info}>
+          Please <B>Sign In</B> to Continue
+        </Text>
 
         <CustomButton
-        onPress={ signInWithGoogleAsync}
-        text="Sign In with Google"
-        bgColor="#FAE9EA"
-        fgColor="#DD4D44"
-      />
-      <CustomButton
-        onPress={onSignInFacebook}
-        text="Sign In with Facebook"
-        bgColor="#E7EAF4"
-        fgColor="#4765A9"
-      />
-      <CustomButton
-        onPress={onSignInGithub}
-        text="Sign In with Github"
-        bgColor="#e3e3e3"
-        fgColor="#363636"
-      />
+          onPress={signInWithGoogleAsync}
+          text="Sign In with Google"
+          bgColor="#FAE9EA"
+          fgColor="#DD4D44"
+        />
+        <CustomButton
+          onPress={onSignInFacebook}
+          text="Sign In with Facebook"
+          bgColor="#E7EAF4"
+          fgColor="#4765A9"
+        />
+        <CustomButton
+          onPress={onSignInGithub}
+          text="Sign In with Github"
+          bgColor="#e3e3e3"
+          fgColor="#363636"
+        />
 
         <Text style={styles.text}>
           By registering, you confirm that you accept our
@@ -209,10 +225,10 @@ const styles = StyleSheet.create({
     // fontWeight: "bold",
     color: "black",
   },
-  info:{
-    margin:"1%",
+  info: {
+    margin: "1%",
     fontSize: 18,
-  }
+  },
 });
 
 export default SignUpScreen;

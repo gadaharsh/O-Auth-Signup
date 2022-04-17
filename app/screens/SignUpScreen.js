@@ -30,6 +30,7 @@ import { async } from "@firebase/util";
 
 import * as Facebook from 'expo-facebook';
 
+
 // Initialize Firebase
 
 const firebaseConfig = {

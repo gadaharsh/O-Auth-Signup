@@ -9,7 +9,7 @@ const Dashboard = () => {
     <ScrollView style={styles.main}>
       <View style={styles.root}>
         <Text>Dashboard Screen</Text>
-        <Text>Email: </Text>
+        <Text>Email: hello </Text>
         <CustomButton text="Button" />
       </View>
     </ScrollView>

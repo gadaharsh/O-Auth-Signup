@@ -28,6 +28,17 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "facebookScheme": "fb123456789012345",
+    "facebookAppId": "393623052609213",
+    "facebookDisplayName": "OAuthSignIn",
+    "plugins": [
+      [
+        "expo-facebook",
+        {
+          "userTrackingPermission": false
+        }
+      ]
+    ]
   }
 }

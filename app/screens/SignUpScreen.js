@@ -20,7 +20,7 @@ import * as Google from "expo-google-app-auth";
 import * as WebBrowser from "expo-web-browser";
 import { ResponseType } from "expo-auth-session";
 // import * as Google from 'expo-auth-session/providers/google';
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import {
   getAuth,
   GoogleAuthProvider,
@@ -28,36 +28,36 @@ import {
 } from "firebase/auth";
 import { async } from "@firebase/util";
 
+import * as Facebook from 'expo-facebook';
+
 // Initialize Firebase
-initializeApp({
+
+const firebaseConfig = {
   apiKey: "AIzaSyC5B50CwfNI4wnPQj6lUgcniWU8I1dP8WE",
   authDomain: "oauthsignup-33c26.firebaseapp.com",
   projectId: "oauthsignup-33c26",
   storageBucket: "oauthsignup-33c26.appspot.com",
   messagingSenderId: "58546763613",
   appId: "1:58546763613:web:e887cc6c345ae12af85ab4",
+};
+
+getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+
+// Listen for authentication state to change.
+getAuth().onAuthStateChanged((user) => {
+  if (user) {
+    console.log("Logged in with user: ", user);
+  } else {
+    console.log('Not logged in')
+  }
 });
 
-WebBrowser.maybeCompleteAuthSession();
+// WebBrowser.maybeCompleteAuthSession();
 
 const SignUpScreen = ({ navigation }) => {
   const B = (props) => (
     <Text style={{ fontWeight: "bold" }}>{props.children}</Text>
   );
-
-  // const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
-  //   {
-  //     clientId: '58546763613-oercrvugokjfcs7cmkfe5c49pdf3qgpg.apps.googleusercontent.com',
-  //     },
-  // );
-
-  // const initAsync = async () => {
-  //   await GoogleSignIn.initAsync({
-  //     // You may ommit the clientId when the firebase `googleServicesFile` is configured
-  //     clientId: '58546763613-oercrvugokjfcs7cmkfe5c49pdf3qgpg.apps.googleusercontent.com',
-  //   });
-  //   this._syncUserWithStateAsync();
-  // };
 
   const [user, setUser] = useState(null);
   const { height } = useWindowDimensions();
@@ -76,11 +76,6 @@ const SignUpScreen = ({ navigation }) => {
 
   const onButtonPress = () => {
     console.warn("Button Clicked");
-    navigation.navigate("Dashboard");
-  };
-
-  const onSignInGoogle = () => {
-    console.warn("Sign In with Google");
     navigation.navigate("Dashboard");
   };
 
@@ -136,8 +131,44 @@ const SignUpScreen = ({ navigation }) => {
     });
   };
 
-  const onSignInFacebook = () => {
-    console.warn("Sign In with Facebook");
+  const signInWithFacebookAsync = async() => {
+    // console.warn("Sign In with Facebook");
+    try {
+      await Facebook.initializeAsync({appId: '393623052609213'}); //  Facebook App Id 
+      const { type, token } = await Facebook.logInWithReadPermissionsAsync({
+        permissions: ['public_profile', 'email'],
+      });
+      console.log(token)
+      if (type === 'success') {
+        const credential = getAuth.FacebookAuthProvider.credential(token);
+        getAuth().signInWithCredential(credential)
+          .then(user => {
+            console.log('Logged in successfully', user)
+
+
+            (async () => {
+              let response = await fetch(`https://graph.facebook.com/me/?fields=id,name&access_token=${token}`);
+            const Info = await response.json();
+            setUserInfo(Info)
+            })();
+
+            navigation.navigate("Dashboard", {
+              picture: userInfo?.picture,
+              name: userInfo?.name,
+              email: userInfo?.email,
+              provider: "Facebook",
+            });
+            
+          })
+          .catch((error) => {
+            console.log('Permission Denied or Error occurred ', error)
+          });
+      } else {
+        // type === 'cancel'
+      }
+    } catch ({ message }) {
+      alert(`Facebook Login Error: ${message}`);
+    }
   };
 
   const onSignInGithub = () => {
@@ -177,7 +208,7 @@ const SignUpScreen = ({ navigation }) => {
           fgColor="#DD4D44"
         />
         <CustomButton
-          onPress={onSignInFacebook}
+          onPress={signInWithFacebookAsync}
           text="Sign In with Facebook"
           bgColor="#E7EAF4"
           fgColor="#4765A9"

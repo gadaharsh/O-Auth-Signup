@@ -29,7 +29,7 @@ import {
 import { async } from "@firebase/util";
 
 import * as Facebook from 'expo-facebook';
-import {FIREBASE_API_KEY,PROJECT_ID,FIREBASE_AUTH_DOMAIN,STORAGE_BUCKET,MESSAGING_SENDER_ID,FIREBASE_APP_ID} from '@env';
+import {FACEBOOK_APPID,GOOGLE_CLIENT, FIREBASE_API_KEY,PROJECT_ID,FIREBASE_AUTH_DOMAIN,STORAGE_BUCKET,MESSAGING_SENDER_ID,FIREBASE_APP_ID} from '@env';
 
 
 // Initialize Firebase
@@ -84,8 +84,7 @@ const SignUpScreen = ({ navigation }) => {
   const signInWithGoogleAsync = async () => {
     try {
       const result = await Google.logInAsync({
-        androidClientId:
-          "58546763613-33tog5un7lrc6h1io85hmdpkdcasfqoi.apps.googleusercontent.com",
+        androidClientId:GOOGLE_CLIENT,
         iosClientID: "",
         scopes: ["profile", "email"],
       });
@@ -136,7 +135,7 @@ const SignUpScreen = ({ navigation }) => {
   const signInWithFacebookAsync = async() => {
     // console.warn("Sign In with Facebook");
     try {
-      await Facebook.initializeAsync({appId: '393623052609213'}); //  Facebook App Id 
+      await Facebook.initializeAsync({appId: FACEBOOK_APPID}); //  Facebook App Id 
       const { type, token } = await Facebook.logInWithReadPermissionsAsync({
         permissions: ['public_profile', 'email'],
       });

@@ -1,14 +1,15 @@
 // import * as firebase from "firebase";
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import {FIREBASE_API_KEY,PROJECT_ID,FIREBASE_AUTH_DOMAIN,STORAGE_BUCKET,MESSAGING_SENDER_ID,FIREBASE_APP_ID} from '@env';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC5B50CwfNI4wnPQj6lUgcniWU8I1dP8WE",
-  authDomain: "oauthsignup-33c26.firebaseapp.com",
-  projectId: "oauthsignup-33c26",
-  storageBucket: "oauthsignup-33c26.appspot.com",
-  messagingSenderId: "58546763613",
-  appId: "1:58546763613:web:e887cc6c345ae12af85ab4",
+  aapiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  projectId: PROJECT_ID,
+  storageBucket: STORAGE_BUCKET,
+  messagingSenderId: MESSAGING_SENDER_ID,
+  appId: FIREBASE_APP_ID,
 };
 
 const firebaseApp = initializeApp(firebaseConfig);

@@ -5,11 +5,12 @@ import { AuthSession } from 'expo';
 
 // The github auth callback should be something like: https://auth.expo.io/@bacon/github
 const REDIRECT_URL = AuthSession.getRedirectUrl();
+import {GITHUB_ID, GITHUB_SECRET} from '@env';
 
 // Add your API stuff here...
 const github = {
-  id: '8438b60d580bdf006e39',
-  secret: '9fb7ef47489de341a5e33eb4c504f6f5e36706c7',
+  id: GITHUB_ID,
+  secret: GITHUB_SECRET,
 };
 
 const githubFields = [
